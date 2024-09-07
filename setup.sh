@@ -94,7 +94,7 @@ sudo modprobe btusb
 sudo systemctl enable bluetooth && sudo systemctl start bluetooth
 
 echo "Installing zip utilities"
-sudo pacman -S p7zip unrar tar rsync git neofetch htop exfat-utils fuse-exfat ntfs-3g flac jasper aria2  --noconfirm
+sudo pacman -S p7zip unrar tar unzip rsync git neofetch htop exfat-utils fuse-exfat ntfs-3g flac jasper aria2  --noconfirm
 sudo pacman -S jdk-openjdk --noconfirm
 
 echo "Making system more stable"
