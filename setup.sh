@@ -78,7 +78,7 @@ sudo systemctl start ufw
 
 echo "Installing AUR Helper (yay)"
 sudo git clone https://aur.archlinux.org/yay.git
-sudo chown -R "$USER" yay
+sudo chown -R "$USER" ./yay
 cd yay
 makepkg -si
 
@@ -156,6 +156,8 @@ echo "GRUB configuration updated successfully!"
 echo "Installing and setting up Zsh"
 sudo pacman -S zsh --noconfirm
 chsh -s $(which zsh)
+touch ~/.zshrc
+cp /etc/zsh/zshrc ~/.zshrc
 sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
 zsh
 git clone https://github.com/wesbos/Cobalt2-iterm.git
