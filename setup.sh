@@ -62,8 +62,6 @@ echo "Updating Pacman Mirrors..."
 sudo pacman -S reflector --noconfirm
 sudo reflector --latest 5 --sort rate --save /etc/pacman.d/mirrorlist
 sudo pacman -Sy
-sudo pacman -S ssh-askpass
-export SUDO_ASKPASS=/usr/bin/ssh-askpass
 
 
 echo "NEOFETCCHHHHHHHH"
@@ -80,7 +78,7 @@ sudo systemctl start ufw
 
 echo "Installing AUR Helper (yay)"
 sudo git clone https://aur.archlinux.org/yay.git
-sudo chown -R $USER:$USER ./yay
+sudo chown -R "$USER" yay
 cd yay
 makepkg -si
 
@@ -158,6 +156,7 @@ echo "GRUB configuration updated successfully!"
 echo "Installing and setting up Zsh"
 sudo pacman -S zsh --noconfirm
 chsh -s $(which zsh)
+sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
 git clone https://github.com/wesbos/Cobalt2-iterm.git
 cd Cobalt2-iterm
 cp cobalt2.zsh-theme ~/.oh-my-zsh/themes
@@ -182,216 +181,8 @@ source $zshrc_file
 echo "Installing end-4/hyprland dots"
 git clone https://github.com/end-4/dots-hyprland.git
 cd dots-hyprland
-rm -rf install.sh
-#!/usr/bin/env bash
-cd "$(dirname "$0")"
-export base="$(pwd)"
-source ./scriptdata/environment-variables
-source ./scriptdata/functions
-source ./scriptdata/installers
-source ./scriptdata/options
+./install.sh
 
-#####################################################################################
-if ! command -v pacman >/dev/null 2>&1; then 
-  printf "\e[31m[$0]: pacman not found, it seems that the system is not ArchLinux or Arch-based distros. Aborting...\e[0m\n"
-  exit 1
-fi
-prevent_sudo_or_root
-
-startask() {
-  # Automatically confirm all prompts
-  sleep 0
-  ask=false
-}
-
-startask
-
-set -e
-#####################################################################################
-printf "\e[36m[$0]: 1. Get packages and setup user groups/services\n\e[0m"
-
-# Issue #363
-if [ "$SKIP_SYSUPDATE" != true ]; then
-  v sudo pacman -Syu
-fi
-
-remove_bashcomments_emptylines ${DEPLISTFILE} ./cache/dependencies_stripped.conf
-readarray -t pkglist < ./cache/dependencies_stripped.conf
-
-if ! command -v yay >/dev/null 2>&1; then
-  echo -e "\e[33m[$0]: \"yay\" not found.\e[0m"
-  showfun install-yay
-  v install-yay
-fi
-
-# Install extra packages from dependencies.conf as declared by the user
-if (( ${#pkglist[@]} != 0 )); then
-  if $ask; then
-    # Execute per element of the array $pkglist
-    for i in "${pkglist[@]}"; do
-      v yay -S --needed $i
-    done
-  else
-    # Execute for all elements of the array $pkglist in one line
-    v yay -S --needed --noconfirm ${pkglist[*]}
-  fi
-fi
-
-# Convert old dependencies to non-explicit dependencies
-set-explicit-to-implicit() {
-  remove_bashcomments_emptylines ./scriptdata/previous_dependencies.conf ./cache/old_deps_stripped.conf
-  readarray -t old_deps_list < ./cache/old_deps_stripped.conf
-  pacman -Qeq > ./cache/pacman_explicit_packages
-  readarray -t explicitly_installed < ./cache/pacman_explicit_packages
-
-  echo "Attempting to set previously explicitly installed deps as implicit..."
-  for i in "${explicitly_installed[@]}"; do
-    for j in "${old_deps_list[@]}"; do
-      [ "$i" = "$j" ] && yay -D --asdeps "$i"
-    done
-  done
-
-  return 0
-}
-
-set-explicit-to-implicit
-
-# Install core dependencies from the meta-packages
-metapkgs=(./arch-packages/illogical-impulse-{audio,backlight,basic,fonts-themes,gnome,gtk,portal,python,screencapture,widgets})
-metapkgs+=(./arch-packages/illogical-impulse-ags)
-metapkgs+=(./arch-packages/illogical-impulse-microtex-git)
-metapkgs+=(./arch-packages/illogical-impulse-oneui4-icons-git)
-[[ -f /usr/share/icons/Bibata-Modern-Classic/index.theme ]] || \
-  metapkgs+=(./arch-packages/illogical-impulse-bibata-modern-classic-bin)
-try sudo pacman -R illogical-impulse-microtex
-
-for i in "${metapkgs[@]}"; do
-  metainstallflags="--needed --noconfirm"
-  v install-local-pkgbuild "$i" "$metainstallflags"
-done
-
-case $SKIP_PYMYC_AUR in
-  true) sleep 0 ;;
-  *)
-    pymycinstallflags="--noconfirm"
-    v install-local-pkgbuild "./arch-packages/illogical-impulse-pymyc-aur" "$pymycinstallflags"
-    ;;
-esac
-
-case $SKIP_HYPR_AUR in
-  true) sleep 0 ;;
-  *)
-    hyprland_installflags="-S --noconfirm"
-    v yay $hyprland_installflags --asdeps hyprutils-git hyprlang-git hyprcursor-git hyprwayland-scanner-git
-    v yay $hyprland_installflags --answerclean=a hyprland-git
-    ;;
-esac
-
-## Optional dependencies
-if pacman -Qs ^plasma-browser-integration$; then 
-  SKIP_PLASMAINTG=true
-fi
-
-case $SKIP_PLASMAINTG in
-  true) sleep 0 ;;
-  *)
-    echo -e "\e[33m[$0]: The size of \"plasma-browser-integration\" is about 250 MiB.\e[0m"
-    echo -e "\e[33mIt is needed if you want playtime of media in Firefox to be shown on the music controls widget.\e[0m"
-    echo -e "\e[33mInstall it? [y/N]\e[0m"
-    p=y
-    case $p in
-      y) x sudo pacman -S --needed --noconfirm plasma-browser-integration ;;
-      *) echo "Ok, won't install" ;;
-    esac
-    ;;
-esac
-
-v sudo usermod -aG video,i2c,input "$(whoami)"
-v bash -c "echo i2c-dev | sudo tee /etc/modules-load.d/i2c-dev.conf"
-v systemctl --user enable ydotool --now
-v gsettings set org.gnome.desktop.interface font-name 'Rubik 11'
-
-#####################################################################################
-printf "\e[36m[$0]: 2. Installing parts from source repo\e[0m\n"
-sleep 1
-
-#####################################################################################
-printf "\e[36m[$0]: 3. Copying + Configuring\e[0m\n"
-
-# In case some folders do not exist
-v mkdir -p $XDG_BIN_HOME $XDG_CACHE_HOME $XDG_CONFIG_HOME $XDG_DATA_HOME
-
-# MISC (For .config/* but not AGS, not Fish, not Hyprland)
-case $SKIP_MISCCONF in
-  true) sleep 0 ;;
-  *)
-    for i in $(find .config/ -mindepth 1 -maxdepth 1 ! -name 'ags' ! -name 'fish' ! -name 'hypr' -exec basename {} \;); do
-      echo "[$0]: Found target: .config/$i"
-      if [ -d ".config/$i" ]; then 
-        v rsync -av --delete ".config/$i/" "$XDG_CONFIG_HOME/$i/"
-      elif [ -f ".config/$i" ]; then 
-        v rsync -av ".config/$i" "$XDG_CONFIG_HOME/$i"
-      fi
-    done
-    ;;
-esac
-
-case $SKIP_FISH in
-  true) sleep 0 ;;
-  *)
-    v rsync -av --delete .config/fish/ "$XDG_CONFIG_HOME"/fish/
-    ;;
-esac
-
-# For AGS
-case $SKIP_AGS in
-  true) sleep 0 ;;
-  *)
-    v rsync -av --delete --exclude '/user_options.js' .config/ags/ "$XDG_CONFIG_HOME"/ags/
-    t="$XDG_CONFIG_HOME/ags/user_options.js"
-    if [ -f $t ]; then
-      echo -e "\e[34m[$0]: \"$t\" already exists.\e[0m"
-      existed_ags_opt=y
-    else
-      echo -e "\e[33m[$0]: \"$t\" does not exist yet.\e[0m"
-      v cp .config/ags/user_options.js $t
-      existed_ags_opt=n
-    fi
-    ;;
-esac
-
-# For Hyprland
-case $SKIP_HYPRLAND in
-  true) sleep 0 ;;
-  *)
-    v rsync -av --delete --exclude '/custom' --exclude '/hyprland.conf' .config/hypr/ "$XDG_CONFIG_HOME"/hypr/
-    t="$XDG_CONFIG_HOME/hypr/hyprland.conf"
-    if [ -f $t ]; then
-      echo -e "\e[34m[$0]: \"$t\" already exists, will not do anything.\e[0m"
-      v cp -f .config/hypr/hyprland.conf $t.new
-      existed_hypr_conf=y
-    else
-      echo -e "\e[33m[$0]: \"$t\" does not exist yet.\e[0m"
-      v cp .config/hypr/hyprland.conf $t
-      existed_hypr_conf=n
-    fi
-    t="$XDG_CONFIG_HOME/hypr/custom"
-    if [ -d $t ]; then
-      echo -e "\e[34m[$0]: \"$t\" already exists, will not do anything.\e[0m"
-    else
-      echo -e "\e[33m[$0]: \"$t\" does not exist yet.\e[0m"
-      v rsync -av --delete .config/hypr/custom/ $t/
-    fi
-    ;;
-esac
-
-# Some folders (e.g., .local/bin) should have full access
-setfacl -Rdm u::rwx,g::rwx,o::rx "$XDG_BIN_HOME"
-setfacl -Rdm u::rwx,g::rwx,o::rx "$XDG_CONFIG_HOME"
-setfacl -Rdm u::rwx,g::rwx,o::rx "$XDG_CACHE_HOME"
-setfacl -Rdm u::rwx,g::rwx,o::rx "$XDG_DATA_HOME"
-
-echo -e "\e[32m[$0]: Finished.\e[0m"
 flatpak install flathub com.atlauncher.ATLauncher --assumeyes
 flatpak install flathub com.obsproject.Studio --assumeyes
 flatpak install flathub com.google.Chrome --assumeyes
