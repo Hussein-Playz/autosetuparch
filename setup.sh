@@ -157,6 +157,7 @@ echo "Installing and setting up Zsh"
 sudo pacman -S zsh --noconfirm
 chsh -s $(which zsh)
 sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
+zsh
 git clone https://github.com/wesbos/Cobalt2-iterm.git
 cd Cobalt2-iterm
 cp cobalt2.zsh-theme ~/.oh-my-zsh/themes
