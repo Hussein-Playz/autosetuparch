@@ -266,9 +266,15 @@ echo "the script folder is deleted but the script itself is saved in your home d
 echo "Please run setup2.sh after rebooting to continue the setup"
 read -r user_input
 if [[ "$user_input" == "y" || "$user_input" == "Y" ]]; then
+    systemctl disable finish-setup.service
+    rm /etc/systemd/system/finish-setup.service
     sudo reboot
 elif [[ "$user_input" == "n" || "$user_input" == "N" ]]; then
+    systemctl disable finish-setup.service
+    rm /etc/systemd/system/finish-setup.service
     exit 1
 else
     echo "Invalid input. Please type 'y' or 'n'"
+    systemctl disable finish-setup.service
+    rm /etc/systemd/system/finish-setup.service
 fi
