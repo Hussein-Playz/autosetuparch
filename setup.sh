@@ -57,6 +57,7 @@ echo "Optimizing Pacman..."
 sudo sed -i '/#ParallelDownloads = 5/c\ParallelDownloads = 5' /etc/pacman.conf
 sudo sed -i '/#Colors/c\Colors' /etc/pacman.conf
 echo "ILoveCandy" | sudo tee -a /etc/pacman.conf
+chmod +x setup2.sh
 cp setup2.sh ~
 echo "Updating Pacman Mirrors..."
 sudo pacman -S reflector --noconfirm
