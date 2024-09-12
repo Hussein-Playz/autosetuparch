@@ -268,13 +268,16 @@ read -r user_input
 if [[ "$user_input" == "y" || "$user_input" == "Y" ]]; then
     systemctl disable finish-setup.service
     rm /etc/systemd/system/finish-setup.service
+    rm ~/setup2.sh
     sudo reboot
 elif [[ "$user_input" == "n" || "$user_input" == "N" ]]; then
     systemctl disable finish-setup.service
     rm /etc/systemd/system/finish-setup.service
+    rm ~/setup2.sh
     exit 1
 else
     echo "Invalid input. Please type 'y' or 'n'"
     systemctl disable finish-setup.service
     rm /etc/systemd/system/finish-setup.service
+    rm ~/setup2.sh
 fi
