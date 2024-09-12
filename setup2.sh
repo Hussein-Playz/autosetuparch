@@ -18,6 +18,7 @@ flatpak install flathub com.obsproject.Studio --assumeyes
 flatpak install flathub com.google.Chrome --assumeyes
 flatpak install flathub dev.vencord.Vesktop --assumeyes
 flatpak install flathub com.visualstudio.code --assumeyes
+flatpak install flathub io.github.zen_browser.zen --assumeyes
 flatpak install flathub com.valvesoftware.Steam --assumeyes
 flatpak install flathub net.lutris.Lutris --assumeyes
 flatpak install flathub md.obsidian.Obsidian --assumeyes
