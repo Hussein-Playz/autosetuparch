@@ -13,6 +13,7 @@ fi
 rm ${SUDOERS_FILE}.bak
 
 sudo pacman -Syu --noconfirm
+flatpak remote-add --if-not-exists flathub https://dl.flathub.org/repo/flathub.flatpakrepo
 flatpak install flathub com.atlauncher.ATLauncher --assumeyes
 flatpak install flathub com.obsproject.Studio --assumeyes
 flatpak install flathub com.google.Chrome --assumeyes
@@ -46,6 +47,7 @@ sudo sed -i '/^\[multilib\]/{s/^#//;n;s/^#//}' "$PACMAN_CONF"
 sudo pacman -Syu
 sudo pacman -Syu
 sudo pacman -S wine wine-mono wine-gecko --noconfirm
+sudo pacman -S xorg-xhost
 sudo pacman -S clamav --noconfirm
 sudo systemctl enable clamav-freshclam
 sudo systemctl start clamav-freshclam
@@ -98,7 +100,7 @@ sl
 
 yay -S timeshift --noconfirm
 echo "Please setup timeshift then close it to continue"
-timeshift
+timeshift-launcher
 yay -S grub-btrfs --noconfirm
 sudo /etc/grub/grub.d/41_snapshots-btrfs
 sudo grub-mkconfig -o /boot/grub/grub.cfg
