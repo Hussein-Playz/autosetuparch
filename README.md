@@ -1,3 +1,7 @@
+# THIS SCRIPT IS DECRACTED AND I WILL BE MOVING IT TO MY OWN ARCH BASED DISTRO SOON WHEN I FINISH DEVELOPPING IT
+# THIS SCRIPT WILL STILL BE AVAIABLE BUT WONT RECIEVE UPDATES
+
+
 # Auto Setup Arch Script
 
 This script sets up an Arch Linux system with various configurations and software installations.
