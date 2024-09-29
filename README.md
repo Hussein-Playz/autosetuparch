@@ -17,10 +17,9 @@ Install additional utilities and packages.
 Configure CPU microcode for better system stability.
 Install and set up Zsh with custom themes and plugins.
 Clone and execute additional configuration scripts from a repository.
-Install and configure Flatpak applications.
+Install Flatpak.
 Enable and configure various system services and utilities.
 Clean up package cache and restore sudoers timestamp timeout.
-Prompt user to reboot for changes to take effect.
 
 credits to chatgpt for creating every if statement
 and this also installls end-4/dots-hyprland: https://github.com/end-4/dots-hyprland
