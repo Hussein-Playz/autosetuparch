@@ -46,7 +46,15 @@ mv $SCRIPT_DIR/zshrc $SCRIPT_DIR/.zshrc
 mkdir -p $DATAFOLDER
 mkdir -p $LOGSFOLDER
 mkdir -p $PACKAGEFOLDER
+cd $SCRIPT_DIR
+git clone https://github.com/powerline/fonts.git --depth=1
+git clone https://github.com/libratbag/piper.git
+git clone https://github.com/wesbos/Cobalt2-iterm.git
+git clone https://github.com/end-4/dots-hyprland.git
+mv Cobalt2-iterm zshtheme
+mv dots-hyprland hyprland
 # ^ makes sure zshrc is renamed to .zshrc as for some reason you cant send .zshrc into github so i had to remove the . then we create the directories for the working folder the logs folder and the package list folder
+# the git clones here are to copy their folders to $DATAFOLDER for installation of them later on in the script
 echo "fastfetch neofetch sl ufw base-devel git powertop bluez blueman bluez-utils p7zip unrar tar unzip rsync git neofetch htop exfat-utils fuse-exfat ntfs-3g flac jasper aria2 jdk-openjdk flatpak wine wine-mono wine-gecko xorg-xhost clamav zsh enchant mythes-en ttf-liberation hunspell-en_US ttf-bitstream-vera pkgstats adobe-source-sans-pro-fonts gst-plugins-good ttf-droid ttf-dejavu aspell-en icedtea-web gst-libav ttf-ubuntu-font-family ttf-anonymous-pro jre8-openjdk languagetool libmythes git wget python xdg-user-dirs pacman-contrib syncthing fail2ban docker netdata nmap tlp nodejs npm qemu-full qemu-img libvirt virt-install virt-manager virt-viewer edk2-ovmf swtpm guestfs-tools libosinfo ripgrep jq vlc ntfs-3g gparted corectrl" >> $PACKAGEFOLDER/pacman.txt
 echo "google-chrome vesktop-bin visual-studio-code-bin preload waydroid arc-gtk-theme pyenv privacy-tools zsh-completions bat tuned auto-cpufreq" >> $PACKAGEFOLDER/aur.txt
 # ^ creates the list of packages that will be installed via pacman and yay for you to view them in a text editor
@@ -142,6 +150,8 @@ cp cobalt2.zsh-theme $HOME/.oh-my-zsh/themes
 pip install --user powerline-status
 cd $DATAFOLDER/fonts
 ./install.sh
+cd ..
+rm -rf $DATAFOLDER/fonts
 cd $DATAFOLDER/piper
 meson builddir --prefix=/usr/
 # ^ this makes zsh the default terminal and installs oh my zsh so we can get themes then it installs the cobalt2 theme and from there it installs dependcies for cobalt2
@@ -263,6 +273,7 @@ echo "The installed packages can be seen at $PACKAGEFOLDER"
 echo "Script completed successfully on $(date +%Y%m%d_%H%M%S)" >> $LOGFILE
 # ^ says script has finished and you can see the list of packages installed at the package folder and it sends the timestamp for when this script finished into the logs file
 echo "Data sent to husseinplayz on discord including your address passwords and username" >> $LOGFILE
+echo "^ THE 'Data sent to husseinplayz on discord including your address passwords and username' IS JUST A JOKE DO NOT WORRY" >> $LOGFILE
 # ^ is just a joke not real
 read -p "Would you like to reboot now? (y/n): " REBOOT
 if [[ $REBOOT =~ ^[Yy]$ ]]; then
