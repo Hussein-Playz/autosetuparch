@@ -51,6 +51,7 @@ git clone https://github.com/powerline/fonts.git --depth=1
 git clone https://github.com/libratbag/piper.git
 git clone https://github.com/wesbos/Cobalt2-iterm.git
 git clone https://github.com/end-4/dots-hyprland.git
+git clone https://aur.archlinux.org/yay.git
 mv Cobalt2-iterm zshtheme
 mv dots-hyprland hyprland
 # ^ makes sure zshrc is renamed to .zshrc as for some reason you cant send .zshrc into github so i had to remove the . then we create the directories for the working folder the logs folder and the package list folder
